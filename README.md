@@ -9,3 +9,4 @@ My methodology to analize data like this is the following:
 5. Analizing the cleaning data
 6. And finally share my insights 
 
+My analysis is on the folder "COVID_economic-analysis.pdf"
