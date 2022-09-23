@@ -4,8 +4,6 @@ author: "Jesus Sanchez"
 date: '2022-09-05'
 output:
   pdf_document: default
-  word_document: default
-  html_document: default
 ---
 
 Let's first load our packages

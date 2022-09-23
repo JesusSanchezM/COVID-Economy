@@ -264,3 +264,8 @@ p <- ggplot(
 p
 p + transition_time(year) +
   labs(title = "Year: {frame_time}")
+
+
+
+
+
