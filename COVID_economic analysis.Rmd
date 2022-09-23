@@ -1,0 +1,256 @@
+---
+title: "COVID_economic_analysis"
+author: "Jesus Sanchez"
+date: '2022-09-05'
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+---
+
+Let's first load our packages
+
+```{r}
+library(tidyverse)
+library(readxl)
+```
+
+
+Then, using the "readx1" package we'll load our data
+
+```{r}
+covid_2022 <- read.csv("covid_data_04_09_2022.csv")
+covid_2020 <- read.csv("covid_data_20_01_2020.csv")
+gdp_rate <- read.csv("GDP Growth Rate by Country.csv")
+gdp_per_capita <- read.csv("GDP Per Capita by Country.csv")
+infation <- read.csv("Inflation Rate by Country.csv")
+```
+
+#Procesing data 
+
+We want to analyze if there is a correlation between COVID and some economic metrics. In order to get it, we have to merge our 4 data frames in just one.
+
+```{r}
+covid_2020 <- covid_2020 %>% rename(Country.Name=Country.Region)
+covid_2022 <- covid_2022 %>% rename(Country.Name=Country..Other)
+#We start by renaming one column to use the merge function 
+```
+
+Before we merge our data, we have to make the rows names be the same, in order to get it we'll change some abbreviate names
+
+```{r}
+covid_2020[covid_2020=="USA"] <- "United States"
+covid_2020[covid_2020=="S. Korea"] <- "South Korea"
+covid_2020[covid_2020=="UK"] <- "United Kingdom"
+covid_2022[covid_2022=="USA"] <- "United States"
+covid_2022[covid_2022=="S. Korea"] <- "South Korea"
+covid_2022[covid_2022=="UK"] <- "United Kingdom"
+```
+
+
+```{r}
+
+all_togheter_2020 <- merge(x = covid_2020, 
+                             y = gdp_rate, by="Country.Name", 
+                             all=T)
+all_togheter_2020 <- merge(x=all_togheter_2020,
+                      y=gdp_per_capita, by ="Country.Name",
+                      all=T)
+all_togheter_2020 <- merge(x=all_togheter_2020,
+                      y=infation, by="Country.Name",
+                      all=T)
+
+#we do the same with data from 2022
+all_togheter_2022 <- merge(x = covid_2022, 
+                             y = gdp_rate, by="Country.Name", 
+                             all=T)
+all_togheter_2022 <- merge(x=all_togheter_2022,
+                      y=gdp_per_capita, by ="Country.Name",
+                      all=T)
+all_togheter_2022 <- merge(x=all_togheter_2022,
+                      y=infation, by="Country.Name",
+                      all=T)
+```
+
+
+#Cleaning data 
+
+We have merged our data, but now the column names are not readables, we don't know what is the gdp_rate, gdp_per capita and the inflation rate. So, let's change the column labels
+
+```{r}
+colnames(all_togheter_2022) #first we visualize the colum names
+head(all_togheter_2022) #display the first rows
+filter(gdp_per_capita,Country.Name=="Afghanistan")
+filter(gdp_rate, Country.Name=="Afghanistan")
+filter(infation, Country.Name=="Afghanistan")
+#filter the Afghanistan row to match the columns with their real name
+all_togheter_2020 <- rename(all_togheter_2020, 
+                            "gdp_per_capita_2021"="X2021.y",  
+       "gdp_per_capita_2020"="X2020.y", 
+       "gdp_per_capita_2019"="X2019.y",        
+       "gdp_per_capita_2018"="X2018.y", 
+       "gdp_per_capita_2017"="X2017.y", 
+       "gdp_rate_2021"="X2021.x",        
+       "gdp_rate_2020"="X2020.x",
+       "gdp_rate_2019"="X2019.x",
+       "gdp_rate_2018"="X2018.x",        
+       "gdp_rate_2017"="X2017.x", 
+       "inflation_rate_2021"="X2021", 
+       "inflation_rate_2020"="X2020",          
+       "inflation_rate_2019"="X2019", 
+       "inflation_rate_2018"="X2018", 
+       "inflation_rate_2017"="X2017")
+#renaming columns from 2020 data
+
+all_togheter_2022 <- rename(all_togheter_2022, 
+                            "gdp_per_capita_2021"="X2021.y",  
+       "gdp_per_capita_2020"="X2020.y", 
+       "gdp_per_capita_2019"="X2019.y",        
+       "gdp_per_capita_2018"="X2018.y", 
+       "gdp_per_capita_2017"="X2017.y", 
+       "gdp_rate_2021"="X2021.x",        
+       "gdp_rate_2020"="X2020.x",
+       "gdp_rate_2019"="X2019.x",
+       "gdp_rate_2018"="X2018.x",        
+       "gdp_rate_2017"="X2017.x", 
+       "inflation_rate_2021"="X2021", 
+       "inflation_rate_2020"="X2020",          
+       "inflation_rate_2019"="X2019", 
+       "inflation_rate_2018"="X2018", 
+       "inflation_rate_2017"="X2017")
+#renaming columns from 2022 data
+
+all_togheter_2022 %>%
+  filter(Country.Name %in% c("Europe", "Africa", "South America",
+                             "Oceania", "Asia", "North America",
+                             "Total:", "World")) #analizing what rows we will delete
+all_togheter_2022 <-all_togheter_2022 %>%
+  filter(!Country.Name %in% c("Europe", "Africa", "South America",
+                             "Oceania", "Asia", "North America",
+                             "Total:", "World"))
+#finally, let's remove some columns that have general metric by region
+```
+
+Now that we have our data, it's time to make our analysis
+
+#Analysis
+
+```{r}
+data_2020 <- all_togheter_2020 %>%                            
+  arrange(desc(TotalCases)) %>% 
+  slice(1:20) # Top 20 highest TotalCases by country 2020
+
+
+data_2022 <- all_togheter_2022 %>%                            
+  arrange(desc(Total.Cases)) %>% 
+  slice(1:20) # Top 20 highest TotalCases by country 2022
+
+
+```
+
+
+
+#Analizing
+Now it's time to analize our data.
+First we will compare the population's countries with their Death_ratio, which is just a division, Population/Total Death.
+
+```{r}
+data_2020 <- mutate(data_2020, Death_ratio=TotalDeaths/TotalCases) 
+#we created in a first step our new Death_ratio column
+data_2020 %>% ggplot(aes(x=reorder(Country.Name, +TotalCases), TotalCases, fill=Death_ratio)) +
+  geom_bar(stat="identity", position="stack")+
+  labs(x="Country Name", y="Total Cases",
+       title="Total cases and deaths caused by covid",
+       subtitle="2020 data") + coord_flip()
+```
+
+
+Now we analize the same but with data from 2022
+
+```{r}
+data_2022 <- mutate(data_2022, Death_ratio=Total.Deaths/Total.Cases)
+#we created in a first step our new Death_ratio column
+data_2022 %>% ggplot(aes(x=reorder(Country.Name, +Total.Cases), Total.Cases, fill=Death_ratio)) +
+  geom_bar(stat="identity", position="stack")+
+  labs(x="Country Name", y="Total Cases",
+       title="Total cases and deaths caused by covid",
+       subtitle="2022 data") + coord_flip()
+```
+
+Comparing data from 2020 and 2022
+Changing the colnames to make data_2022 and data_2020 can match.
+And merge their rows
+
+
+```{r}
+colnames(data_2020)
+colnames(data_2022)
+
+data_2020 <- select(data_2020, -Continent, WHO.Region,-NewRecovered, -NewDeaths, -TotalRecovered,
+                    NewCases, -ActiveCases, -ActiveCases)
+data_2022 <- select(data_2022, -New.Recovered, -New.Deaths, -Total.Recovered,
+                    New.Cases, -Active.Cases, -Active.Cases)
+data_2022 <- data_2022[,-2]
+
+data_2020 <-data_2020 %>% rename(Total.Cases=TotalCases,
+                     Total.Deaths=TotalDeaths,
+                     Serious..Critical=Serious.Critical,
+                     Tot.Cases..1M.pop=Tot.Cases.1M.pop,
+                     Deaths..1M.pop=Deaths.1M.pop,
+                     Total.Tests=TotalTests,
+                     Tests...1M.pop=Tests.1M.pop,
+                     Deaths..1M.pop=Deaths.1M.pop
+                     )
+
+all_data <- bind_rows(data_2020, data_2022)
+```
+
+```{r}
+all_data %>% ggplot(aes(x=reorder(Country.Name, +Total.Cases), Total.Cases, fill=Death_ratio)) +
+  geom_bar(stat="identity", position="stack")+
+  labs(x="Country Name", y="Total Cases",
+       title="Total cases and deaths caused by covid",
+       subtitle="2022 data") + coord_flip()
+```
+
+But, there's a relationship between COVID and the gdp per capita in 2020?
+Let's make a linear regression analysis to have an answer.
+
+```{r}
+all_togheter_2020 <- mutate(all_togheter_2020,                  total.cases.rate=TotalCases/Population)
+#first we standarize our variable, having a relation between total cases and population by country, in order to make a fair analysis
+
+all_togheter_2020 %>% ggplot() + 
+  geom_smooth(aes(gdp_per_capita_2019, total.cases.rate))+
+  geom_point(aes(gdp_per_capita_2019, total.cases.rate))
+
+all_togheter_2020 %>% lm(formula=total.cases.rate ~gdp_per_capita_2019) %>% 
+  summary()
+
+all_togheter_2020 %>% lm(formula=gdp_per_capita_2019~total.cases.rate) %>% 
+  summary()
+```
+To interpret this model, we will not focus on the r-squared, we will just focus on the significance of the variables in the model. In this case we have two statistical significant variables in both models. The first one is the GDP per capita, which is significant, explains that the GDP per capita of a country determine the covid cases in a country.
+
+
+```{r}
+mapdata <- map_data("world")
+mapdata <- mapdata %>% rename("Country.Name" = "region")
+mapdata[mapdata=="USA"] <- "United States"
+all_togheter_2020 <- mutate(all_togheter_2020,
+                   Death_ratio=TotalDeaths/TotalCases)
+
+map_data <- right_join(mapdata, all_togheter_2020, by="Country.Name")
+
+ggplot(map_data, aes(long, lat, group=group))+
+  geom_polygon(aes(fill=Death_ratio), color="black")
+ggplot(map_data, aes(long, lat, group=group))+
+  geom_polygon(aes(fill=gdp_per_capita_2020), color="black")
+```
+
+
+
+
+
+
+
