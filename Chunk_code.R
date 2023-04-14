@@ -30,7 +30,7 @@ all_togheter_2022 <- merge(x=all_togheter_2022,
                       y=infation, by="Country.Name",
                       all=T)
 
-rm(all_togheter_2022)
+# rm(all_togheter_2022)
 
 colnames(all_togheter_2022)
 head(all_togheter_2022)
