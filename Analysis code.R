@@ -1,5 +1,6 @@
 library(tidyverse)
 library(readxl)
+library(gridExtra)
 
 covid_2022 <- read.csv("covid_data_04_09_2022.csv")
 covid_2020 <- read.csv("covid_data_20_01_2020.csv")
@@ -103,8 +104,18 @@ head(covid_2020_2022)
 
 cv <- covid_2020_2022 %>% arrange(desc(total_cases_2020)) %>% head(10)
 
-ggplot(cv) + 
-  geom_bar(aes(x=Country, y=total_cases_2020), stat="identity")
+par(mfrow = c(1, 1))
+p1 <- ggplot(cv) + 
+  geom_bar(aes(x=Country, y=total_cases_2020/1000), stat="identity")
+p2 <- ggplot(cv) + 
+  geom_bar(aes(x=Country, y=total_cases_2022/1000), stat="identity")
+grid.arrange(p1,p2)
+
+p3 <- ggplot(cv) + 
+  geom_bar(aes(x=Country, y=total_deaths_2020), stat="identity")
+p4 <- ggplot(cv) + 
+  geom_bar(aes(x=Country, y=total_deaths_2022), stat="identity")
+grid.arrange(p1,p2,p3, p1) 
 
 
 
