@@ -74,12 +74,37 @@ length(covid_2022$country_other_2022)
 #We have to be conscious about the capital letters or different spelling format, 
 #for instance, we could have mexico, México or Mexico, and R will display that they are different things
 
+setdiff(covid_2020$country_region_2020, covid_2022$country_other_2022) #what are the different countries?
+#As we observe words with accent marks are misspelling and Brunei has an extra space
 
+covid_2022 %>% select(country_other_2022) %>% 
+  filter(substr(country_other_2022,1,1)== "B")
+covid_2022 %>% select(country_other_2022) %>% 
+  filter(substr(country_other_2022,1,1)== "R")
+covid_2022 %>% select(country_other_2022) %>% 
+  filter(substr(country_other_2022,1,1)== "C")
+#Countries from covid_2020 misspelling are in covid_2022
 
+covid_2020[covid_2020=="RÃ©union"] <- "Réunion"
+covid_2020[covid_2020=="Brunei "] <- "Brunei"
+covid_2020[covid_2020=="CuraÃ§ao"] <- "Curaçao"
 
+setdiff(covid_2020$country_region_2020, covid_2022$country_other_2022)
+#We have correct all values
 
+covid_2020 <- covid_2020 %>% rename(Country=country_region_2020)
+covid_2022 <- covid_2022 %>% rename(Country=country_other_2022)
 
+#time to merge those two data sets
+covid_2020_2022 <- merge(x = covid_2020, 
+                             y = covid_2022, by="Country", 
+                             all=F)
+head(covid_2020_2022)
 
+cv <- covid_2020_2022 %>% arrange(desc(total_cases_2020)) %>% head(10)
+
+ggplot(cv) + 
+  geom_bar(aes(x=Country, y=total_cases_2020), stat="identity")
 
 
 
