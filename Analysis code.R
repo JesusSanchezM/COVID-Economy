@@ -102,20 +102,32 @@ covid_2020_2022 <- merge(x = covid_2020,
                              all=F)
 head(covid_2020_2022)
 
-cv <- covid_2020_2022 %>% arrange(desc(total_cases_2020)) %>% head(10)
+cv <- covid_2020_2022 %>% arrange(desc(total_cases_2020)) %>% head(15)
 
 par(mfrow = c(1, 1))
-p1 <- ggplot(cv) + 
-  geom_bar(aes(x=Country, y=total_cases_2020/1000), stat="identity")
+
 p2 <- ggplot(cv) + 
-  geom_bar(aes(x=Country, y=total_cases_2022/1000), stat="identity")
+  geom_bar(aes(x=Country, y=total_cases_2022/1000000, fill="2022"), stat="identity", color="black")+
+  geom_bar(aes(x=Country, y=total_cases_2020/1000000, fill="2020"), stat="identity", color="black")+
+  scale_fill_manual(name="Cases", values=c("2022"="orange", "2020"="blue"), 
+                    labels=c("2022"="2022", "2020"="2020")) + theme_classic() +
+  labs(title="COVID's cases per millon 2020-2022", 
+       x="Country", y="Cases/1,000,000", 
+       caption="Source: Data collected from Worlmeter, own elaboration")+
+  theme(legend.position = "right", 
+        plot.title = element_text(hjust=0.5),
+        plot.caption = element_text(hjust=1),
+        axis.text.x = element_text(angle=45))
+p2
+
 grid.arrange(p1,p2)
 
 p3 <- ggplot(cv) + 
-  geom_bar(aes(x=Country, y=total_deaths_2020), stat="identity")
+  geom_bar(aes(x=Country, y=total_deaths_2020), stat="identity") 
 p4 <- ggplot(cv) + 
   geom_bar(aes(x=Country, y=total_deaths_2022), stat="identity")
 grid.arrange(p1,p2,p3, p1) 
+
 
 
 
