@@ -120,7 +120,6 @@ p2 <- ggplot(cv) +
         axis.text.x = element_text(angle=45))
 p2
 
-grid.arrange(p1,p2)
 
 p3 <- ggplot(cv) + 
   geom_bar(aes(x=Country, y=total_deaths_2020), stat="identity") 
