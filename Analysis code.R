@@ -1,6 +1,7 @@
-library(tidyverse)
-library(readxl)
-library(gridExtra)
+library(tidyverse) 
+library(readxl) #read excel files
+library(gridExtra) #arranges of graphs
+library(plotly) #interactive graphics
 
 covid_2022 <- read.csv("covid_data_04_09_2022.csv")
 covid_2020 <- read.csv("covid_data_20_01_2020.csv")
@@ -106,26 +107,82 @@ cv <- covid_2020_2022 %>% arrange(desc(total_cases_2020)) %>% head(15)
 
 par(mfrow = c(1, 1))
 
-p2 <- ggplot(cv) + 
+p1 <- ggplot(cv) + 
   geom_bar(aes(x=Country, y=total_cases_2022/1000000, fill="2022"), stat="identity", color="black")+
   geom_bar(aes(x=Country, y=total_cases_2020/1000000, fill="2020"), stat="identity", color="black")+
   scale_fill_manual(name="Cases", values=c("2022"="orange", "2020"="blue"), 
                     labels=c("2022"="2022", "2020"="2020")) + theme_classic() +
   labs(title="COVID's cases per millon 2020-2022", 
        x="Country", y="Cases/1,000,000", 
-       caption="Source: Data collected from Worlmeter, own elaboration")+
+       caption="Source: Data collected from Worlmeter \nOwn elaboration")+
   theme(legend.position = "right", 
         plot.title = element_text(hjust=0.5),
         plot.caption = element_text(hjust=1),
         axis.text.x = element_text(angle=45))
-p2
+p1
 
 
 p3 <- ggplot(cv) + 
-  geom_bar(aes(x=Country, y=total_deaths_2020), stat="identity") 
+  geom_bar(aes(x=Country, y=total_deaths_2022/1000000, fill="2022"), stat="identity", color="black")+
+  geom_bar(aes(x=Country, y=total_deaths_2020/1000000, fill="2020"), stat="identity", color="black")+
+  scale_fill_manual(name="Deaths", values=c("2022"="orange", "2020"="blue"), 
+                    labels=c("2022"="2022", "2020"="2020")) + theme_classic() +
+  labs(title="COVID's cumulative deaths per millon 2020-2022", 
+       x="Country", y="Cases/1,000,000", 
+       caption="Source: Data collected from Worlmeter \nOwn elaboration")+
+  theme(legend.position = "right", 
+        plot.title = element_text(hjust=0.5),
+        plot.caption = element_text(hjust=1),
+        axis.text.x = element_text(angle=45))
+p3
+
+p1 <- ggplot(cv) + 
+  geom_bar(aes(x=Country, y=total_deaths_2022/1000000, fill=""), stat="identity", 
+           col="black",show.legend=F)+
+  scale_fill_manual(values=c("salmon"))+
+  labs(title="COVID's cumulative deaths per millon 2022", 
+       x="", y="Cases/1,000,000")+  theme_classic()+
+  theme(legend.position = "none", 
+        plot.title = element_text(hjust=0.5),
+        axis.text.x = element_text(angle=45)) 
+
+p2 <- ggplot(cv) + 
+  geom_bar(aes(x=Country, y=total_deaths_2020/1000000, fill="turquoise"), stat="identity", 
+           col="black", show.legend = F)+
+  scale_fill_manual(values=c("turquoise"))+
+  labs(title="COVID's cumulative deaths per millon 2020", 
+       x="Country", y="Cases/1,000,000")  +
+  theme_classic()+
+  theme(legend.position = "none", 
+        plot.title = element_text(hjust=0.5),
+        axis.text.x = element_text(angle=45)) 
+
 p4 <- ggplot(cv) + 
-  geom_bar(aes(x=Country, y=total_deaths_2022), stat="identity")
-grid.arrange(p1,p2,p3, p1) 
+  geom_bar(aes(x=Country, y=total_deaths_2022/1000000, fill="2022"), stat="identity", color="black")+
+  geom_bar(aes(x=Country, y=total_deaths_2020/1000000, fill="2020"), stat="identity", color="black")+
+  scale_fill_manual(name="Deaths", values=c("2022"="salmon", "2020"="turquoise"), 
+                    labels=c("2022"="2022", "2020"="2020")) + theme_classic() +
+  labs(title="COVID's cumulative deaths per millon 2020-2022", 
+       x="", y="Cases/1,000,000") +
+  theme(legend.position = "right", 
+        plot.title = element_text(hjust=0.5),
+        axis.text.x = element_text(angle=45))
+
+gridExtra::grid.arrange(p4, p1, p2, layout_matrix = rbind(c(1, 1), c(2, 3)))
+# ggplotly(p4)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
