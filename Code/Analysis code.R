@@ -171,19 +171,36 @@ p4 <- ggplot(cv) +
 gridExtra::grid.arrange(p4, p1, p2, layout_matrix = rbind(c(1, 1), c(2, 3)))
 # ggplotly(p4)
 
+#-----------------------------------------------------------------------
 
+library(tidyverse)
 
+features <- covid_2020_2022 %>% 
+  select(population_2020, total_cases_2020, total_deaths_2020, 
+         )
 
+rcorr(as.matrix(na.omit(features)))
 
+library("Hmisc")
 
+summary(lm(covid_2020_2022$total_cases_2020 ~ 
+           covid_2020_2022$total_deaths_2020))
 
+ggplot() + 
+  geom_point(covid_2020_2022, mapping=aes(x = total_cases_2020,
+                                  y = total_deaths_2020)) + theme_classic()
 
+ggplot() + 
+  geom_boxplot(mapping = aes(x))
 
+filter(covid_2020_2022$total_cases_2020 <=
+         quantile(covid_2020_2022$total_cases_2020, .75))
 
+x <- covid_2020_2022 %>% select(total_cases_2020) %>%  
+  filter(total_cases_2020 <= quantile(total_cases_2020, .50))
 
+as.vector(x)
 
-
-
-
-
+boxplot(covid_2020_2022$total_cases_2020)
+boxplot(x)
 
