@@ -204,3 +204,4 @@ as.vector(x)
 boxplot(covid_2020_2022$total_cases_2020)
 boxplot(x)
 
+
